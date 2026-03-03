@@ -9,4 +9,48 @@ body {
   width: 100vw;
   background-color: #212121;
   color: white;
+  text-align: center;
+  font-family: sans-serif;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: center;
+}
+
+header {
+  width: 100%;
+  padding: 40px;
+}
+
+main {
+  display: flex;
+  height: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 40px;
+}
+
+.gameboard {
+  display: grid;
+  width: min(50vw, 50vh);
+  height: min(50vw, 50vh);
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+}
+
+.board-box {
+  border: 1px white solid;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 50px;
+}
+
+#start-restart-btn {
+  padding: 5px 15px;
+  font-size: 20px;
 }
