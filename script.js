@@ -5,9 +5,9 @@ const Gameboard = (() => {
     let lastMoveBy = ''
 
     let board = [
-        ' ', ' ', ' ',
-        ' ', ' ', ' ',
-        ' ', ' ', ' '
+        '', '', '',
+        '', '', '',
+        '', '', ''
     ]
 
     function displayBoard() {
@@ -32,7 +32,7 @@ const Gameboard = (() => {
 
     function clearGameboard() {
         for (let i = 0; i < 9; i++) {
-            board[i] = ' '
+            board[i] = ''
         }
     }
 
@@ -73,12 +73,19 @@ const Gameboard = (() => {
 
 // Player factory function
 function createPlayer(marker, gameboard) {
+
+    let winCount = 0
+
     function makeAMove(position) {
+
+        console.log(position)
+        position = parseInt(position)
+
         // checking if the position is valid first
-        if (position >= 0 && position < 9) {
+        if (position !== null && position >= 0 && position < 9) {
 
             // checking if the position is occupied already
-            if (gameboard.getBoardInfoAt(position) === ' ') {
+            if (gameboard.getBoardInfoAt(position) === '') {
                 // gameboard.getBoard()[position] = marker
                 gameboard.markOnBoard(marker, position)
                 gameboard.displayBoard()
@@ -90,112 +97,83 @@ function createPlayer(marker, gameboard) {
         else {
             console.log('Invalid Position')
         }
+
+
     }
 
-    return { marker, makeAMove }
+    return {
+        marker,
+        winCount,
+        makeAMove,
+    }
 }
 
-const Game = (() => {
+const displayController = (() => {
 
-    let gameWon = false;
-    let winCount = 0;
+    const gameStatusDisplay = document.querySelector('.game-status')
 
-    const gameBoard = Gameboard
-    gameBoard.displayPositions()
-    // gameBoard.displayBoard()
-
-    function checkGameWon(gameBoard) {
-
-        let winner = ''
-        const [_0, _1, _2, _3, _4, _5, _6, _7, _8] = gameBoard.getBoard()
-
-        // 1st row
-        if ((_0 != ' ' && _0 === _1) && (_1 === _2)) {
-            winner = _0
-            gameWon = true
-        }
-
-        // 2nd row
-        else if ((_3 !== ' ' && _3 === _4) && (_4 === _5)) {
-            winner = _3
-            gameWon = true
-        }
-
-        // 3rd row
-        else if ((_6 !== ' ' && _6 === _7) && (_7 === _8)) {
-            winner = _6
-            gameWon = true
-        }
-
-        // 1st column
-        else if ((_0 !== ' ' && _0 === _3) && (_3 === _6)) {
-            winner = _0
-            gameWon = true
-        }
-
-        // 2nd column
-        else if ((_1 !== ' ' && _1 === _4) && (_4 === _7)) {
-            winner = _1
-            gameWon = true
-        }
-
-        // 3rd column
-        else if ((_2 !== ' ' && _2 === _5) && (_5 === _8)) {
-            winner = _2
-            gameWon = true
-        }
-
-        // top left to bottom right diagonal
-        else if ((_0 !== ' ' && _0 === _4) && (_4 === _8)) {
-            winner = _0
-            gameWon = true
-        }
-
-        // 2nd diagonal - top right to bottom left
-        else if ((_2 !== ' ' && _2 === _4) && (_4 === _6)) {
-            winner = _2
-            gameWon = true
-        }
-
-        else {
-            gameWon = false
-        }
-
-        console.log(gameWon, winner)
-        return { winner, gameWon }
+    function displayTurn(currentPlayer) {
+        gameStatusDisplay.innerHTML = `<strong>${currentPlayer.marker}</strong> 's turn`
     }
 
-    function play() {
-        const playerOne = createPlayer('X', gameBoard)
-        const playerTwo = createPlayer('O', gameBoard)
+    function markOnBoard(currentPlayer, id) {
+        const cellID = parseInt(id[1])
+        // console.log(cellID)
 
-        let flag = Math.round(Math.random()) === 1 ? true : false
-        let totalMoves = 0
-
-        while (!gameWon || totalMoves < 9) {
-            const currentPlayer = flag ? playerOne : playerTwo
-            currentPlayer.makeAMove(parseInt(
-                prompt(`'${currentPlayer.marker}' Choose a position between 0 and 9`)
-            ))
-            const status = checkGameWon(gameBoard)
-            gameWon = status.gameWon
-            if (gameWon) {
-                console.log(status.winner, 'Won!')
-                break;
+        if (cellID !== null) {
+            const gridCell = document.querySelector(`#_${cellID}`)
+            if (!gridCell.textContent) {
+                gridCell.textContent = currentPlayer.marker
+                return true
             }
-            flag = !flag
-            totalMoves++
         }
 
-        if (!gameWon && totalMoves === 9) {
-            console.log(`It's a tie!`)
-        }
     }
 
-    return { play }
 
+    return {
+        displayTurn,
+        markOnBoard
+    }
 })()
 
+const Game = ((Gameboard, displayCtrl) => {
 
-const ticTacToe = Game
-ticTacToe.play()
+    const gameBoardArray = Gameboard.getBoard()
+    const mainButton = document.querySelector('#start-restart-btn')
+    const gridDisplay = document.querySelector('.gameboard')
+
+    const playerOne = createPlayer('X', Gameboard)
+    const playerTwo = createPlayer('O', Gameboard)
+
+    let currentPlayer;
+    let flag = Math.round(Math.random()) // 1 or 0
+
+    function setCurrentPlayer(flag) {
+        currentPlayer = flag ? playerOne : playerTwo
+        displayCtrl.displayTurn(currentPlayer)
+    }
+
+    mainButton.addEventListener('click', () => {
+
+        // const currentPlayer = flag ? playerOne : playerTwo
+        setCurrentPlayer(flag)
+
+        console.log('Start game')
+        gridDisplay.addEventListener('click', (e) => {
+
+            // Mark a move on board
+            const cellID = e.target.id
+            const cellPosition = cellID[1]
+            if (displayCtrl.markOnBoard(currentPlayer, cellID)) {
+                currentPlayer.makeAMove(cellPosition)
+                console.log(gameBoardArray)
+                flag = !flag
+                setCurrentPlayer(flag)
+            }
+
+        })
+    })
+
+
+})(Gameboard, displayController)
