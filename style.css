@@ -23,6 +23,8 @@ body {
 header {
   width: 100%;
   padding: 40px;
+  margin-top: 50px;
+  font-size: 2.5rem;
 }
 
 main {
@@ -38,8 +40,16 @@ main {
   display: grid;
   width: min(50vw, 50vh);
   height: min(50vw, 50vh);
+  min-width: 200px;
+  min-height: 200px;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
+
+  user-select: none;
+}
+
+.gameboard:hover {
+  cursor: pointer;
 }
 
 .board-box {
@@ -50,7 +60,33 @@ main {
   font-size: 50px;
 }
 
+.score-board {
+  width: 100%;
+  display: flex;
+  gap: 10px;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.score-title {
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
 #start-restart-btn {
   padding: 5px 15px;
   font-size: 20px;
+  background-color: #212121;
+  color: white;
+  border-radius: 5px;
+  border: 1px solid white;
+}
+
+#start-restart-btn:hover {
+  box-shadow: 0 5px 20px rgba(255, 255, 255, 0.5);
+  background-color: #353535;
+}
+
+#start-restart-btn:active {
+  scale: 0.95;
 }

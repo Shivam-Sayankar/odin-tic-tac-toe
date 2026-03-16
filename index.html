@@ -14,9 +14,9 @@
 
     <main>
 
-        <div class="game-status">X's turn</div>
+        <div class="game-status">Press start to begin</div>
         <div class="gameboard">
-            <div class="board-box" id="_0">X</div>
+            <div class="board-box" id="_0"></div>
             <div class="board-box" id="_1"></div>
             <div class="board-box" id="_2"></div>
             <div class="board-box" id="_3"></div>
@@ -26,11 +26,34 @@
             <div class="board-box" id="_7"></div>
             <div class="board-box" id="_8"></div>
         </div>
+
+        <div class="score-board">
+            <div class="player-score">
+                <div class="score-title">
+                    Player 1 (<span id="player-one-marker">X</span>)
+                </div>
+                <div id="player-one-score">4</div>
+            </div>
+
+            <div class="player-score">
+                <div class="score-title">Tie</div>
+                <div id="tie-score">10</div>
+            </div>
+
+            <div class="player-score">
+                <div class="score-title">
+                    Player 2 (<span id="player-two-marker">O</span>)
+                </div>
+                <div id="player-two-score">3</div>
+            </div>
+            
+        </div>
+
         <div class="options">2 Player</div>
         <button id="start-restart-btn">Start</button>
 
     </main>
 
-    <!-- <script src="script.js"></script> -->
+    <script src="script.js" defer></script>
 </body>
 </html>
