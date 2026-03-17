@@ -23,7 +23,7 @@ body {
 header {
   width: 100%;
   padding: 40px;
-  margin-top: 50px;
+  /* margin-top: 50px; */
   font-size: 2.5rem;
 }
 
@@ -33,7 +33,7 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 30px;
 }
 
 .gameboard {
@@ -44,7 +44,6 @@ main {
   min-height: 200px;
   grid-template-columns: 1fr 1fr 1fr;
   grid-template-rows: 1fr 1fr 1fr;
-
   user-select: none;
 }
 
@@ -80,6 +79,7 @@ main {
   color: white;
   border-radius: 5px;
   border: 1px solid white;
+  margin-bottom: 40px;
 }
 
 #start-restart-btn:hover {
