@@ -72,7 +72,7 @@ const Gameboard = (() => {
 
 
 // Player factory function
-function createPlayer(marker, gameboard) {
+function createPlayer(marker, playerID, gameboard) {
 
     let winCount = 0
 
@@ -101,16 +101,32 @@ function createPlayer(marker, gameboard) {
 
     }
 
+    function getPlayerID() {
+        return playerID
+    }
+
+    function getWinCount() {
+        return winCount
+    }
+
+    function incrementWinCount() {
+        winCount++
+    }
+
     return {
         marker,
         winCount,
         makeAMove,
+        getPlayerID,
+        getWinCount,
+        incrementWinCount
     }
 }
 
 const displayController = (() => {
 
     const gameStatusDisplay = document.querySelector('.game-status')
+    const drawCountDisplay = document.querySelector('#tie-score')
 
     function displayTurn(currentPlayer) {
         gameStatusDisplay.innerHTML = `<strong>${currentPlayer.marker}</strong> 's turn`
@@ -124,13 +140,23 @@ const displayController = (() => {
         gameStatusDisplay.textContent = text
     }
 
+    function updatePlayerWinCountOnBoard(currentPlayer) {
+        const playerID = currentPlayer.getPlayerID()
+        const playerScoreDisplay = document.querySelector(`#${playerID}-score`)
+        playerScoreDisplay.textContent = currentPlayer.getWinCount()
+    }
+
+    function updateDrawCountOnBoard(drawCount) {
+        drawCountDisplay.textContent = drawCount
+    }
+
     function markOnBoard(currentPlayer, id) {
         const cellID = parseInt(id[1])
         // console.log(cellID)
 
         if (cellID !== null) {
             const gridCell = document.querySelector(`#_${cellID}`)
-            if (!gridCell.textContent) {
+            if (gridCell !== null && !gridCell.textContent) {
                 gridCell.textContent = currentPlayer.marker
                 return true
             }
@@ -143,6 +169,8 @@ const displayController = (() => {
         displayTurn,
         displayWinner,
         updateGameStatus,
+        updatePlayerWinCountOnBoard,
+        updateDrawCountOnBoard,
         markOnBoard
     }
 })()
@@ -153,8 +181,8 @@ const Game = ((Gameboard, displayCtrl) => {
     const mainButton = document.querySelector('#start-restart-btn')
     const gridDisplay = document.querySelector('.gameboard')
 
-    const playerOne = createPlayer('X', Gameboard)
-    const playerTwo = createPlayer('O', Gameboard)
+    const playerOne = createPlayer('X', 'player-one', Gameboard)
+    const playerTwo = createPlayer('O', 'player-two', Gameboard)
 
     let currentPlayer;
     let flag = Math.round(Math.random()) // 1 or 0
@@ -166,9 +194,16 @@ const Game = ((Gameboard, displayCtrl) => {
         moveCount = 0
         Gameboard.clearGameboard()
         gridDisplay.querySelectorAll('.board-box').forEach(cell => {
-            cell.innerHTML = ''
+            cell.textContent = ''
         })
     }
+
+
+    function incrementDrawCount() {
+        // drawCount++
+        displayCtrl.updateDrawCountOnBoard(++drawCount)
+    }
+
 
     function checkWinner() {
         let winner = ''
@@ -253,8 +288,12 @@ const Game = ((Gameboard, displayCtrl) => {
 
             if (gameWon) {
                 console.log('Game won by:', winner)
+
                 gridDisplay.removeEventListener('click', handlePlayerInteraction)
                 displayCtrl.displayWinner(winner)
+
+                currentPlayer.incrementWinCount()
+                displayCtrl.updatePlayerWinCountOnBoard(currentPlayer)
 
                 mainButton.textContent = 'Restart'
             }
@@ -268,8 +307,12 @@ const Game = ((Gameboard, displayCtrl) => {
 
                 if (moveCount === 9) {
                     console.log('Its a draw')
+
+                    incrementDrawCount()
+
                     gridDisplay.removeEventListener('click', handlePlayerInteraction)
                     displayCtrl.updateGameStatus(`It's a Draw!`)
+
                     // resetGameSession()
                     mainButton.textContent = 'Restart'
                 }
