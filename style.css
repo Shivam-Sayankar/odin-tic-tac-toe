@@ -2,6 +2,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  font-family: "Comic Relief", system-ui;
 }
 
 body {
@@ -10,7 +11,6 @@ body {
   background-color: #212121;
   color: white;
   text-align: center;
-  font-family: sans-serif;
 }
 
 body {
@@ -22,8 +22,7 @@ body {
 
 header {
   width: 100%;
-  padding: 40px;
-  /* margin-top: 50px; */
+  padding: 30px;
   font-size: 2.5rem;
 }
 
@@ -33,7 +32,11 @@ main {
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  gap: 40px;
+  gap: 30px;
+}
+
+.game-status {
+  font-size: 1.4rem;
 }
 
 .gameboard {
@@ -52,19 +55,20 @@ main {
 }
 
 .board-box {
-  border: 1px white solid;
+  border: 1px rgba(255, 255, 255, 0.3) solid;
   display: flex;
   justify-content: center;
   align-items: center;
-  font-size: 50px;
+  font-size: clamp(3rem, 5vh, 5rem);
 }
 
 .score-board {
   width: 100%;
   display: flex;
-  gap: 10px;
+  gap: 20px;
   justify-content: space-evenly;
   align-items: center;
+  font-size: 1.1rem;
 }
 
 .score-title {
@@ -73,18 +77,19 @@ main {
 }
 
 #start-restart-btn {
-  padding: 5px 15px;
-  font-size: 20px;
+  padding: 10px 20px;
+  font-size: 1.2rem;
+  font-weight: bold;
   background-color: #212121;
   color: white;
-  border-radius: 5px;
+  border-radius: 10px;
   border: 1px solid white;
   margin-bottom: 40px;
 }
 
 #start-restart-btn:hover {
-  box-shadow: 0 5px 20px rgba(255, 255, 255, 0.5);
-  background-color: #353535;
+  box-shadow: 0 5px 25px rgba(255, 255, 255, 0.5);
+  background-color: #3a3a3a;
 }
 
 #start-restart-btn:active {

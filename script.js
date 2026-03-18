@@ -2,8 +2,6 @@ console.log("Hare Krishna!")
 
 const Gameboard = (() => {
 
-    let lastMoveBy = ''
-
     let board = [
         '', '', '',
         '', '', '',
@@ -36,14 +34,6 @@ const Gameboard = (() => {
         }
     }
 
-    function setLastMoveBy(marker) {
-        lastMoveBy = marker
-    }
-
-    function getLastMoveBy() {
-        return lastMoveBy
-    }
-
     function getBoard() {
         return board
     }
@@ -57,14 +47,11 @@ const Gameboard = (() => {
     }
 
     return {
-        // board,
         getBoard,
         getBoardInfoAt,
         markOnBoard,
         displayBoard,
         displayPositions,
-        setLastMoveBy,
-        getLastMoveBy,
         clearGameboard
     }
 
@@ -78,7 +65,6 @@ function createPlayer(marker, playerID, gameboard) {
 
     function makeAMove(position) {
 
-        console.log(position)
         position = parseInt(position)
 
         // checking if the position is valid first
@@ -86,9 +72,8 @@ function createPlayer(marker, playerID, gameboard) {
 
             // checking if the position is occupied already
             if (gameboard.getBoardInfoAt(position) === '') {
-                // gameboard.getBoard()[position] = marker
                 gameboard.markOnBoard(marker, position)
-                // gameboard.displayBoard()
+                return true
             } else {
                 console.log('Position already occupied')
             }
@@ -98,7 +83,7 @@ function createPlayer(marker, playerID, gameboard) {
             console.log('Invalid Position')
         }
 
-
+        return false
     }
 
     function getPlayerID() {
@@ -150,20 +135,10 @@ const displayController = (() => {
         drawCountDisplay.textContent = drawCount
     }
 
-    function markOnBoard(currentPlayer, id) {
-        const cellID = parseInt(id[1])
-        // console.log(cellID)
-
-        if (cellID !== null) {
-            const gridCell = document.querySelector(`#_${cellID}`)
-            if (gridCell !== null && !gridCell.textContent) {
-                gridCell.textContent = currentPlayer.marker
-                return true
-            }
-        }
-
+    function displayMarkerOnBoard(currentPlayer, cellID) {
+        const gridCell = document.getElementById(cellID)
+        gridCell.textContent = currentPlayer.marker
     }
-
 
     return {
         displayTurn,
@@ -171,13 +146,12 @@ const displayController = (() => {
         updateGameStatus,
         updatePlayerWinCountOnBoard,
         updateDrawCountOnBoard,
-        markOnBoard
+        displayMarkerOnBoard
     }
 })()
 
 const Game = ((Gameboard, displayCtrl) => {
 
-    const gameBoardArray = Gameboard.getBoard()
     const mainButton = document.querySelector('#start-restart-btn')
     const gridDisplay = document.querySelector('.gameboard')
 
@@ -198,12 +172,10 @@ const Game = ((Gameboard, displayCtrl) => {
         })
     }
 
-
     function incrementDrawCount() {
         // drawCount++
         displayCtrl.updateDrawCountOnBoard(++drawCount)
     }
-
 
     function checkWinner() {
         let winner = ''
@@ -263,7 +235,7 @@ const Game = ((Gameboard, displayCtrl) => {
             gameWon = false
         }
 
-        console.log(gameWon, winner)
+        // console.log(gameWon, winner)
         return { winner, gameWon }
     }
 
@@ -276,49 +248,45 @@ const Game = ((Gameboard, displayCtrl) => {
         // Mark a move on board
         const cellID = e.target.id
         const cellPosition = cellID[1]
-        if (
-            displayCtrl.markOnBoard(currentPlayer, cellID) &&
-            moveCount < 9
-        ) {
 
-            currentPlayer.makeAMove(cellPosition)
-            console.log(gameBoardArray)
+        if (moveCount < 9) {
 
-            const { winner, gameWon } = checkWinner()
+            const isMoveValid = currentPlayer.makeAMove(cellPosition)
 
-            if (gameWon) {
-                console.log('Game won by:', winner)
+            if (isMoveValid) {
+                displayCtrl.displayMarkerOnBoard(currentPlayer, cellID)
+                // console.log(gameBoardArray)
 
-                gridDisplay.removeEventListener('click', handlePlayerInteraction)
-                displayCtrl.displayWinner(winner)
+                const { winner, gameWon } = checkWinner()
 
-                currentPlayer.incrementWinCount()
-                displayCtrl.updatePlayerWinCountOnBoard(currentPlayer)
-
-                mainButton.textContent = 'Restart'
-            }
-
-            else { // if (!gameWon) {
-                flag = !flag
-                setCurrentPlayer(flag)
-
-                moveCount++
-                console.log('moveCount:', moveCount)
-
-                if (moveCount === 9) {
-                    console.log('Its a draw')
-
-                    incrementDrawCount()
+                if (gameWon) {
+                    // console.log('Game won by:', winner)
 
                     gridDisplay.removeEventListener('click', handlePlayerInteraction)
-                    displayCtrl.updateGameStatus(`It's a Draw!`)
+                    displayCtrl.displayWinner(winner)
 
-                    // resetGameSession()
+                    currentPlayer.incrementWinCount()
+                    displayCtrl.updatePlayerWinCountOnBoard(currentPlayer)
+
                     mainButton.textContent = 'Restart'
                 }
+
+                else { // if (!gameWon) {
+                    flag = !flag
+                    setCurrentPlayer(flag)
+                    moveCount++
+
+                    if (moveCount === 9) {
+
+                        incrementDrawCount()
+
+                        gridDisplay.removeEventListener('click', handlePlayerInteraction)
+                        displayCtrl.updateGameStatus(`It's a Draw!`)
+
+                        mainButton.textContent = 'Restart'
+                    }
+                }
             }
-
-
         }
     }
 
@@ -327,10 +295,9 @@ const Game = ((Gameboard, displayCtrl) => {
         resetGameSession()
         mainButton.textContent = 'Start'
 
-        // const currentPlayer = flag ? playerOne : playerTwo
         setCurrentPlayer(flag)
 
-        console.log('Start game')
+        console.log('Game Started')
         gridDisplay.addEventListener('click', handlePlayerInteraction)
     })
 
